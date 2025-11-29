@@ -341,7 +341,17 @@
 
             <div class="input-group">
                 <label for="student-grade">학년</label>
-                <input type="text" id="student-grade" placeholder="예: 9학년, 10학년">
+                <input type="text" id="student-grade" placeholder="예: 9, 10, 11">
+            </div>
+
+            <div class="input-group">
+                <label for="student-class">반</label>
+                <input type="text" id="student-class" placeholder="예: 1, 2, 3">
+            </div>
+
+            <div class="input-group">
+                <label for="student-number">번호</label>
+                <input type="text" id="student-number" placeholder="예: 1, 2, 3">
             </div>
 
             <div class="info-box">
@@ -461,6 +471,8 @@
         let answers = {};
         let studentName = '';
         let studentGrade = '';
+        let studentClass = '';
+        let studentNumber = '';
 
         // DOM 요소
         const introScreen = document.getElementById('intro-screen');
@@ -469,6 +481,8 @@
         const startBtn = document.getElementById('start-btn');
         const studentNameInput = document.getElementById('student-name');
         const studentGradeInput = document.getElementById('student-grade');
+        const studentClassInput = document.getElementById('student-class');
+        const studentNumberInput = document.getElementById('student-number');
         const questionText = document.getElementById('question-text');
         const questionCounter = document.getElementById('question-counter');
         const progressPercent = document.getElementById('progress-percent');
@@ -480,16 +494,22 @@
         function checkInputs() {
             const nameValue = studentNameInput.value.trim();
             const gradeValue = studentGradeInput.value.trim();
-            startBtn.disabled = !(nameValue && gradeValue);
+            const classValue = studentClassInput.value.trim();
+            const numberValue = studentNumberInput.value.trim();
+            startBtn.disabled = !(nameValue && gradeValue && classValue && numberValue);
         }
 
         studentNameInput.addEventListener('input', checkInputs);
         studentGradeInput.addEventListener('input', checkInputs);
+        studentClassInput.addEventListener('input', checkInputs);
+        studentNumberInput.addEventListener('input', checkInputs);
 
         // 시작 버튼
         startBtn.addEventListener('click', () => {
             studentName = studentNameInput.value.trim();
             studentGrade = studentGradeInput.value.trim();
+            studentClass = studentClassInput.value.trim();
+            studentNumber = studentNumberInput.value.trim();
             introScreen.classList.add('hidden');
             testScreen.classList.remove('hidden');
             showQuestion();
@@ -548,6 +568,8 @@
             const result = {
                 name: studentName,
                 grade: studentGrade,
+                class: studentClass,
+                number: studentNumber,
                 date: new Date().toISOString(),
                 scores: normalizedScores,
                 topProfiles: sortedProfiles
@@ -615,8 +637,12 @@
             answers = {};
             studentName = '';
             studentGrade = '';
+            studentClass = '';
+            studentNumber = '';
             studentNameInput.value = '';
             studentGradeInput.value = '';
+            studentClassInput.value = '';
+            studentNumberInput.value = '';
             startBtn.disabled = true;
             resultScreen.classList.add('hidden');
             introScreen.classList.remove('hidden');
