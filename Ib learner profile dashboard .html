@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IB 학습자상 진단 관리 대시보드</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // IB 학습자상 10가지 정의
+        const learnerProfiles = {
+            inquirer: { name: '탐구하는 사람', nameEn: 'Inquirers', emoji: '🔍', color: '#3B82F6' },
+            knowledgeable: { name: '지식이 풍부한 사람', nameEn: 'Knowledgeable', emoji: '📚', color: '#8B5CF6' },
+            thinker: { name: '생각하는 사람', nameEn: 'Thinkers', emoji: '💭', color: '#06B6D4' },
+            communicator: { name: '소통하는 사람', nameEn: 'Communicators', emoji: '💬', color: '#10B981' },
+            principled: { name: '원칙을 지키는 사람', nameEn: 'Principled', emoji: '⚖️', color: '#6366F1' },
+            openMinded: { name: '열린 마음을 지닌 사람', nameEn: 'Open-minded', emoji: '🌏', color: '#14B8A6' },
+            caring: { name: '배려하는 사람', nameEn: 'Caring', emoji: '❤️', color: '#EF4444' },
+            riskTaker: { name: '도전하는 사람', nameEn: 'Risk-takers', emoji: '🚀', color: '#F59E0B' },
+            balanced: { name: '균형 잡힌 사람', nameEn: 'Balanced', emoji: '⚖️', color: '#84CC16' },
+            reflective: { name: '성찰하는 사람', nameEn: 'Reflective', emoji: '🤔', color: '#A855F7' }
+        };
+
+        function Dashboard() {
+            const [results, setResults] = useState([]);
+            const [selectedView, setSelectedView] = useState('overview'); // overview, studentList, statistics
+            const chartRef = useRef(null);
+            const chartInstance = useRef(null);
+
+            useEffect(() => {
+                loadResults();
+            }, []);
+
+            useEffect(() => {
+                if (selectedView === 'statistics' && results.length > 0) {
+                    renderChart();
+                }
+                return () => {
+                    if (chartInstance.current) {
+                        chartInstance.current.destroy();
+                    }
+                };
+            }, [selectedView, results]);
+
+            const loadResults = () => {
+                try {
+                    const data = JSON.parse(localStorage.getItem('ibTestResults') || '[]');
+                    setResults(data);
+                } catch (e) {
+                    console.error('Failed to load results', e);
+                }
+            };
+
+            const deleteResult = (index) => {
+                if (confirm('정말 삭제하시겠습니까?')) {
+                    const newResults = results.filter((_, i) => i !== index);
+                    setResults(newResults);
+                    localStorage.setItem('ibTestResults', JSON.stringify(newResults));
+                }
+            };
+
+            const clearAllData = () => {
+                if (confirm('모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                    localStorage.removeItem('ibTestResults');
+                    setResults([]);
+                }
+            };
+
+            const exportToCSV = () => {
+                if (results.length === 0) {
+                    alert('내보낼 데이터가 없습니다.');
+                    return;
+                }
+
+                const headers = ['이름', '학년', '테스트 날짜', ...Object.values(learnerProfiles).map(p => p.name)];
+                const rows = results.map(r => [
+                    r.name,
+                    r.grade,
+                    new Date(r.date).toLocaleString('ko-KR'),
+                    ...Object.keys(learnerProfiles).map(key => r.scores[key])
+                ]);
+
+                let csv = headers.join(',') + '\n';
+                rows.forEach(row => {
+                    csv += row.join(',') + '\n';
+                });
+
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `IB학습자상_진단결과_${new Date().toLocaleDateString('ko-KR')}.csv`;
+                link.click();
+            };
+
+            const renderChart = () => {
+                if (!chartRef.current || results.length === 0) return;
+
+                // 각 학습자상별 평균 점수 계산
+                const profileAverages = {};
+                Object.keys(learnerProfiles).forEach(profile => {
+                    const total = results.reduce((sum, r) => sum + (r.scores[profile] || 0), 0);
+                    profileAverages[profile] = Math.round(total / results.length);
+                });
+
+                if (chartInstance.current) {
+                    chartInstance.current.destroy();
+                }
+
+                const ctx = chartRef.current.getContext('2d');
+                chartInstance.current = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: Object.values(learnerProfiles).map(p => p.name),
+                        datasets: [{
+                            label: '평균 점수',
+                            data: Object.keys(learnerProfiles).map(key => profileAverages[key]),
+                            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(99, 102, 241, 1)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 20
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            };
+
+            const getTopProfiles = () => {
+                if (results.length === 0) return [];
+
+                const profileCounts = {};
+                Object.keys(learnerProfiles).forEach(profile => {
+                    profileCounts[profile] = 0;
+                });
+
+                results.forEach(result => {
+                    result.topProfiles.forEach((profile, index) => {
+                        if (index === 0) profileCounts[profile[0]] += 3; // 1등
+                        else if (index === 1) profileCounts[profile[0]] += 2; // 2등
+                        else if (index === 2) profileCounts[profile[0]] += 1; // 3등
+                    });
+                });
+
+                return Object.entries(profileCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+            };
+
+            // Overview 화면
+            const renderOverview = () => {
+                const topProfiles = getTopProfiles();
+
+                return (
+                    <div className="space-y-6">
+                        {/* 통계 카드 */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-indigo-600">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-gray-500 text-sm font-medium">총 참여 학생</p>
+                                        <p className="text-3xl font-bold text-gray-800 mt-2">{results.length}명</p>
+                                    </div>
+                                    <div className="bg-indigo-100 p-4 rounded-full">
+                                        <span className="text-3xl">👥</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-600">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-gray-500 text-sm font-medium">평균 완료율</p>
+                                        <p className="text-3xl font-bold text-gray-800 mt-2">100%</p>
+                                    </div>
+                                    <div className="bg-green-100 p-4 rounded-full">
+                                        <span className="text-3xl">✅</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-600">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-gray-500 text-sm font-medium">최근 테스트</p>
+                                        <p className="text-lg font-bold text-gray-800 mt-2">
+                                            {results.length > 0 
+                                                ? new Date(results[results.length - 1].date).toLocaleDateString('ko-KR')
+                                                : '-'
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className="bg-purple-100 p-4 rounded-full">
+                                        <span className="text-3xl">📅</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 가장 많이 나온 학습자상 */}
+                        <div className="bg-white rounded-xl shadow-lg p-8">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-6">🏆 인기 학습자상 TOP 5</h3>
+                            {topProfiles.length > 0 ? (
+                                <div className="space-y-4">
+                                    {topProfiles.map(([profile, count], index) => {
+                                        const profileData = learnerProfiles[profile];
+                                        const maxCount = topProfiles[0][1];
+                                        const percentage = (count / maxCount) * 100;
+                                        return (
+                                            <div key={profile}>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <span className="font-medium text-gray-700">
+                                                        {index + 1}. {profileData.emoji} {profileData.name}
+                                                    </span>
+                                                    <span className="font-bold text-indigo-600">{count}점</span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-3">
+                                                    <div
+                                                        className="h-3 rounded-full transition-all duration-500"
+                                                        style={{ 
+                                                            width: `${percentage}%`,
+                                                            backgroundColor: profileData.color
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <p className="text-gray-500 text-center py-8">아직 데이터가 없습니다.</p>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+
+            // 학생 목록 화면
+            const renderStudentList = () => {
+                return (
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div className="p-6 border-b border-gray-200">
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-2xl font-bold text-gray-800">📋 학생 목록</h3>
+                                <div className="space-x-2">
+                                    <button
+                                        onClick={exportToCSV}
+                                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                                    >
+                                        📥 CSV 내보내기
+                                    </button>
+                                    <button
+                                        onClick={clearAllData}
+                                        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                                    >
+                                        🗑️ 전체 삭제
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {results.length > 0 ? (
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이름</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">학년</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">테스트 날짜</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상위 학습자상</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작업</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {results.map((result, index) => (
+                                            <tr key={index} className="hover:bg-gray-50">
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm font-medium text-gray-900">{result.name}</div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">{result.grade}</div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-500">
+                                                        {new Date(result.date).toLocaleString('ko-KR')}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {result.topProfiles.slice(0, 3).map(([profile, score]) => {
+                                                            const profileData = learnerProfiles[profile];
+                                                            return (
+                                                                <span
+                                                                    key={profile}
+                                                                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                                                    style={{
+                                                                        backgroundColor: profileData.color + '20',
+                                                                        color: profileData.color
+                                                                    }}
+                                                                >
+                                                                    {profileData.emoji} {profileData.name.slice(0, 4)} ({score}%)
+                                                                </span>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <button
+                                                        onClick={() => deleteResult(index)}
+                                                        className="text-red-600 hover:text-red-900"
+                                                    >
+                                                        삭제
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <div className="p-12 text-center text-gray-500">
+                                <p className="text-xl mb-2">📭</p>
+                                <p>아직 테스트 결과가 없습니다.</p>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            // 통계 화면
+            const renderStatistics = () => {
+                if (results.length === 0) {
+                    return (
+                        <div className="bg-white rounded-xl shadow-lg p-12 text-center text-gray-500">
+                            <p className="text-xl mb-2">📊</p>
+                            <p>통계를 표시하려면 최소 1명 이상의 데이터가 필요합니다.</p>
+                        </div>
+                    );
+                }
+
+                const profileAverages = {};
+                Object.keys(learnerProfiles).forEach(profile => {
+                    const total = results.reduce((sum, r) => sum + (r.scores[profile] || 0), 0);
+                    profileAverages[profile] = Math.round(total / results.length);
+                });
+
+                return (
+                    <div className="space-y-6">
+                        {/* 레이더 차트 */}
+                        <div className="bg-white rounded-xl shadow-lg p-8">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-6">📊 학습자상 평균 점수 분포</h3>
+                            <div className="flex justify-center">
+                                <canvas ref={chartRef} width="400" height="400"></canvas>
+                            </div>
+                        </div>
+
+                        {/* 학습자상별 상세 통계 */}
+                        <div className="bg-white rounded-xl shadow-lg p-8">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-6">📈 학습자상별 상세 통계</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {Object.entries(profileAverages)
+                                    .sort((a, b) => b[1] - a[1])
+                                    .map(([profile, avg]) => {
+                                        const profileData = learnerProfiles[profile];
+                                        return (
+                                            <div key={profile} className="border rounded-lg p-4">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className="font-medium text-gray-700">
+                                                        {profileData.emoji} {profileData.name}
+                                                    </span>
+                                                    <span className="text-2xl font-bold" style={{ color: profileData.color }}>
+                                                        {avg}%
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                                    <div
+                                                        className="h-2 rounded-full transition-all"
+                                                        style={{ 
+                                                            width: `${avg}%`,
+                                                            backgroundColor: profileData.color
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+                    {/* 헤더 */}
+                    <div className="bg-white shadow-md">
+                        <div className="max-w-7xl mx-auto px-4 py-6">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <h1 className="text-3xl font-bold text-indigo-600">IB 학습자상 진단 관리 시스템</h1>
+                                    <p className="text-gray-500 mt-1">학생들의 IB 학습자상 진단 결과를 관리하고 분석합니다</p>
+                                </div>
+                                <a
+                                    href="ib-learner-profile-test.html"
+                                    className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-semibold"
+                                >
+                                    🎯 테스트 페이지로
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 네비게이션 탭 */}
+                    <div className="bg-white border-b">
+                        <div className="max-w-7xl mx-auto px-4">
+                            <div className="flex space-x-8">
+                                <button
+                                    onClick={() => setSelectedView('overview')}
+                                    className={`py-4 px-2 border-b-2 font-medium transition ${
+                                        selectedView === 'overview'
+                                            ? 'border-indigo-600 text-indigo-600'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    }`}
+                                >
+                                    📊 개요
+                                </button>
+                                <button
+                                    onClick={() => setSelectedView('studentList')}
+                                    className={`py-4 px-2 border-b-2 font-medium transition ${
+                                        selectedView === 'studentList'
+                                            ? 'border-indigo-600 text-indigo-600'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    }`}
+                                >
+                                    📋 학생 목록
+                                </button>
+                                <button
+                                    onClick={() => setSelectedView('statistics')}
+                                    className={`py-4 px-2 border-b-2 font-medium transition ${
+                                        selectedView === 'statistics'
+                                            ? 'border-indigo-600 text-indigo-600'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    }`}
+                                >
+                                    📈 통계 분석
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 콘텐츠 영역 */}
+                    <div className="max-w-7xl mx-auto px-4 py-8">
+                        {selectedView === 'overview' && renderOverview()}
+                        {selectedView === 'studentList' && renderStudentList()}
+                        {selectedView === 'statistics' && renderStatistics()}
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<Dashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
