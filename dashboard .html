@@ -399,16 +399,16 @@
     <script>
         // IB 학습자상 정의
         const learnerProfiles = {
-            inquirer: { name: '탐구하는 사람', nameEn: 'Inquirers', emoji: '🔍', color: '#3B82F6' },
-            knowledgeable: { name: '지식이 풍부한 사람', nameEn: 'Knowledgeable', emoji: '📚', color: '#8B5CF6' },
-            thinker: { name: '생각하는 사람', nameEn: 'Thinkers', emoji: '💭', color: '#06B6D4' },
-            communicator: { name: '소통하는 사람', nameEn: 'Communicators', emoji: '💬', color: '#10B981' },
-            principled: { name: '원칙을 지키는 사람', nameEn: 'Principled', emoji: '⚖️', color: '#6366F1' },
-            openMinded: { name: '열린 마음을 지닌 사람', nameEn: 'Open-minded', emoji: '🌏', color: '#14B8A6' },
-            caring: { name: '배려하는 사람', nameEn: 'Caring', emoji: '❤️', color: '#EF4444' },
-            riskTaker: { name: '도전하는 사람', nameEn: 'Risk-takers', emoji: '🚀', color: '#F59E0B' },
-            balanced: { name: '균형 잡힌 사람', nameEn: 'Balanced', emoji: '⚖️', color: '#84CC16' },
-            reflective: { name: '성찰하는 사람', nameEn: 'Reflective', emoji: '🤔', color: '#A855F7' }
+            inquirer: { name: '탐구하는 사람', nameEn: 'Inquirers', emoji: '🔍', color: '#E91E63' },
+            knowledgeable: { name: '지식이 풍부한 사람', nameEn: 'Knowledgeable', emoji: '📚', color: '#9C27B0' },
+            thinker: { name: '사고 하는 사람', nameEn: 'Thinkers', emoji: '💭', color: '#2196F3' },
+            communicator: { name: '소통하는 사람', nameEn: 'Communicators', emoji: '💬', color: '#00BCD4' },
+            principled: { name: '원칙을 지키는 사람', nameEn: 'Principled', emoji: '⚖️', color: '#009688' },
+            openMinded: { name: '열린 마음을 가진 사람', nameEn: 'Open-minded', emoji: '🌏', color: '#4CAF50' },
+            caring: { name: '배려하는 사람', nameEn: 'Caring', emoji: '❤️', color: '#8BC34A' },
+            riskTaker: { name: '도전하는 사람', nameEn: 'Risk-takers', emoji: '🚀', color: '#FF9800' },
+            balanced: { name: '균형 잡힌 사람', nameEn: 'Balanced', emoji: '⚖️', color: '#FF5722' },
+            reflective: { name: '성찰하는 사람', nameEn: 'Reflective', emoji: '🤔', color: '#2979FF' }
         };
 
         let results = [];
@@ -482,10 +482,13 @@
             });
 
             results.forEach(result => {
-                result.topProfiles.forEach((profile, index) => {
-                    if (index === 0) profileCounts[profile[0]] += 3;
-                    else if (index === 1) profileCounts[profile[0]] += 2;
-                    else if (index === 2) profileCounts[profile[0]] += 1;
+                // 상위 4개까지 반영 (기존 3개에서 확장)
+                const tops = result.topProfiles || [];
+                tops.slice(0, 4).forEach((profile, index) => {
+                    if (index === 0) profileCounts[profile[0]] += 4;      // 1위: 4점
+                    else if (index === 1) profileCounts[profile[0]] += 3; // 2위: 3점
+                    else if (index === 2) profileCounts[profile[0]] += 2; // 3위: 2점
+                    else if (index === 3) profileCounts[profile[0]] += 1; // 4위: 1점
                 });
             });
 
@@ -528,10 +531,10 @@
                                 <td>${result.number}번</td>
                                 <td>${new Date(result.date).toLocaleString('ko-KR')}</td>
                                 <td>
-                                    ${result.topProfiles.slice(0, 3).map(([profile, score]) => {
+                                    ${(result.topProfiles || []).slice(0, 4).map(([profile, score]) => {
                                         const profileData = learnerProfiles[profile];
                                         return `<span class="tag" style="background-color: ${profileData.color}20; color: ${profileData.color};">
-                                            ${profileData.emoji} ${profileData.name.slice(0, 4)} (${score}%)
+                                            ${profileData.emoji} ${profileData.name} (${score}%)
                                         </span>`;
                                     }).join('')}
                                 </td>
