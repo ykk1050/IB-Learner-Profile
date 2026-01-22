@@ -430,6 +430,23 @@
                 </tbody>
             </table>
 
+            <div class="input-group" style="background: #f8f9fa; padding: 20px; border-radius: 15px; border: 2px solid #e9ecef;">
+                <label style="text-align: center; margin-bottom: 15px; font-size: 1.1em; color: #667eea;">📝 검사 유형 선택</label>
+                <div style="display: flex; justify-content: center; gap: 30px;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 10px; border-radius: 8px; transition: background 0.2s;">
+                        <input type="radio" name="test-type" value="50" style="width: 20px; height: 20px;">
+                        <span style="font-size: 1.1em;">50문항 (약식)</span>
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 10px; border-radius: 8px; transition: background 0.2s;">
+                        <input type="radio" name="test-type" value="100" checked style="width: 20px; height: 20px;">
+                        <span style="font-size: 1.1em;">100문항 (정밀)</span>
+                    </label>
+                </div>
+                <p style="text-align: center; color: #666; font-size: 0.9em; margin-top: 10px;">
+                    * 50문항: 약 10분 소요 / 100문항: 약 20분 소요
+                </p>
+            </div>
+
             <div class="input-group">
                 <label for="student-name">이름</label>
                 <input type="text" id="student-name" placeholder="이름을 입력하세요">
@@ -603,8 +620,8 @@
             }
         };
 
-        // 질문 데이터
-        const questions = [
+        // 질문 데이터 (기본값)
+        const defaultQuestions = [
             // Inquirers
             { id: 1, text: '새로운 것을 보면 “왜 그럴까?” 하는 마음이 든다.', profile: 'inquirer' },
             { id: 2, text: '모르는 것이 생기면 바로 알아보려고 한다.', profile: 'inquirer' },
@@ -717,9 +734,13 @@
             { id: 100, text: '내 행동 습관(자주 하는 행동)을 알아보려고 한다.', profile: 'reflective' }
         ];
 
+        // 저장된 문항이 있으면 불러오고, 없으면 기본값 사용
+        let questions = JSON.parse(localStorage.getItem('ibTestQuestions')) || defaultQuestions;
+
         // 상태 관리
         let currentQuestion = 0;
         let answers = {};
+        let activeQuestions = []; // 활성화된 질문 목록
         let studentName = '';
         let studentGrade = '';
         let studentClass = '';
@@ -761,6 +782,41 @@
             studentGrade = studentGradeInput.value.trim();
             studentClass = studentClassInput.value.trim();
             studentNumber = studentNumberInput.value.trim();
+
+            // 문항 수 선택 처리
+            const testType = document.querySelector('input[name="test-type"]:checked').value;
+            activeQuestions = [];
+            
+            if (testType === '50') {
+                // 50문항 모드: 각 프로필별로 'useForShortTest'가 true인 문항만 필터링
+                // (기존 데이터 호환성을 위해 속성이 없으면 앞의 5개 사용)
+                
+                const profiles = Object.keys(learnerProfiles);
+                profiles.forEach(profile => {
+                    const profileQuestions = questions.filter(q => q.profile === profile);
+                    
+                    // useForShortTest 속성이 있는 문항 찾기
+                    let shortTestQuestions = profileQuestions.filter(q => q.useForShortTest);
+                    
+                    // 만약 설정된 문항이 없다면(기존 데이터 등), 앞에서부터 5개 자동 선택
+                    if (shortTestQuestions.length === 0) {
+                        shortTestQuestions = profileQuestions.slice(0, 5);
+                    }
+                    
+                    // 만약 설정된 문항이 5개보다 많다면, 앞의 5개만 사용 (50문항 유지를 위해)
+                    if (shortTestQuestions.length > 5) {
+                        shortTestQuestions = shortTestQuestions.slice(0, 5);
+                    }
+
+                    activeQuestions.push(...shortTestQuestions);
+                });
+                
+                // ID 순서대로 정렬
+                activeQuestions.sort((a, b) => a.id - b.id);
+            } else {
+                activeQuestions = [...questions];
+            }
+
             introScreen.classList.add('hidden');
             testScreen.classList.remove('hidden');
             showQuestion();
@@ -768,10 +824,10 @@
 
         // 질문 표시
         function showQuestion() {
-            const question = questions[currentQuestion];
+            const question = activeQuestions[currentQuestion];
             questionText.textContent = question.text;
-            questionCounter.textContent = `질문 ${currentQuestion + 1} / ${questions.length}`;
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            questionCounter.textContent = `질문 ${currentQuestion + 1} / ${activeQuestions.length}`;
+            const progress = ((currentQuestion + 1) / activeQuestions.length) * 100;
             progressPercent.textContent = `${Math.round(progress)}%`;
             progressFill.style.width = `${progress}%`;
         }
@@ -780,9 +836,9 @@
         answerOptions.addEventListener('click', (e) => {
             if (e.target.classList.contains('answer-btn')) {
                 const score = parseInt(e.target.dataset.score);
-                answers[questions[currentQuestion].id] = score;
+                answers[activeQuestions[currentQuestion].id] = score;
 
-                if (currentQuestion < questions.length - 1) {
+                if (currentQuestion < activeQuestions.length - 1) {
                     currentQuestion++;
                     showQuestion();
                 } else {
@@ -798,13 +854,17 @@
                 scores[profile] = 0;
             });
 
-            questions.forEach(q => {
+            // activeQuestions 기준으로 점수 계산
+            activeQuestions.forEach(q => {
                 const score = answers[q.id] || 0;
                 scores[q.profile] += score;
             });
 
             // 정규화 (0-100%)
-            const maxScore = 50;
+            // 문항 수에 따른 최대 점수 계산 (문항 수 / 10개 프로필 * 5점)
+            const questionsPerProfile = activeQuestions.length / 10;
+            const maxScore = questionsPerProfile * 5;
+            
             const normalizedScores = {};
             Object.keys(scores).forEach(profile => {
                 normalizedScores[profile] = Math.round((scores[profile] / maxScore) * 100);
@@ -822,6 +882,7 @@
                 class: studentClass,
                 number: studentNumber,
                 date: new Date().toISOString(),
+                testType: activeQuestions.length, // 검사 유형 저장 (50 or 100)
                 scores: normalizedScores,
                 topProfiles: sortedProfiles
             };

@@ -89,6 +89,52 @@
             border-bottom: 2px solid #e5e7eb;
         }
 
+        /* 필터 스타일 추가 */
+        .filter-bar {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+
+        .filter-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #4b5563;
+            font-size: 0.95em;
+        }
+
+        .filter-group select {
+            padding: 8px 30px 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #374151;
+            min-width: 140px;
+            background-color: white;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .filter-group select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+
         .tabs-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -285,6 +331,182 @@
             margin-bottom: 20px;
         }
 
+        /* 학생 이름 링크 스타일 */
+        .student-name-link {
+            color: #667eea;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .student-name-link:hover {
+            color: #5568d3;
+        }
+
+        /* 정렬 헤더 스타일 */
+        .sortable-header {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 20px !important;
+        }
+        .sortable-header:hover {
+            background-color: #f3f4f6;
+        }
+        .sort-icon {
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 0.8em;
+            color: #9ca3af;
+        }
+        .sortable-header.asc .sort-icon::after { content: '▲'; color: #667eea; }
+        .sortable-header.desc .sort-icon::after { content: '▼'; color: #667eea; }
+        .sortable-header .sort-icon::after { content: '↕'; }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1000px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+            animation: slideIn 0.3s;
+        }
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #333;
+            text-decoration: none;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* 문항 관리 스타일 */
+        .question-manager-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .question-filter-select {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+        }
+
+        .question-edit-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .question-edit-item {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            transition: all 0.3s;
+        }
+
+        /* 50문항 선택된 아이템 강조 스타일 */
+        .question-edit-item.short-test-selected {
+            background: #eff6ff;
+            border-color: #667eea;
+            box-shadow: 0 4px 6px rgba(102, 126, 234, 0.1);
+        }
+
+        .question-id-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        /* 50문항 뱃지 */
+        .short-test-badge {
+            background: #10b981;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            margin-left: 5px;
+            display: none;
+        }
+        .question-edit-item.short-test-selected .short-test-badge {
+            display: inline-block;
+        }
+
+        .question-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .question-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+            color: #4b5563;
+        }
+
+        .question-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .question-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -328,6 +550,25 @@
             <button class="tab active" data-tab="overview">📊 개요</button>
             <button class="tab" data-tab="students">📋 학생 목록</button>
             <button class="tab" data-tab="statistics">📈 통계 분석</button>
+            <button class="tab" data-tab="questions">📝 문항 관리</button>
+        </div>
+    </div>
+
+    <!-- 필터 바 -->
+    <div class="filter-bar">
+        <div class="filter-container">
+            <div class="filter-group">
+                <label for="grade-filter">🏫 학년</label>
+                <select id="grade-filter">
+                    <option value="all">전체 학년</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="class-filter">🚪 반</label>
+                <select id="class-filter">
+                    <option value="all">전체 반</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -394,6 +635,41 @@
                 <div id="detailed-stats"></div>
             </div>
         </div>
+
+        <!-- 문항 관리 탭 -->
+        <div id="questions-tab" class="hidden">
+            <div class="card">
+                <div class="question-manager-header">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <h2>📝 진단 문항 관리</h2>
+                        <select id="question-profile-filter" class="question-filter-select">
+                            <!-- 옵션은 JS로 생성 -->
+                        </select>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-warning" id="reset-questions-btn">↺ 초기화</button>
+                        <button class="btn btn-primary" id="save-questions-btn">💾 저장하기</button>
+                    </div>
+                </div>
+                
+                <div class="info-box" style="background: #fffbeb; border: 1px solid #fcd34d; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #92400e;">
+                    ⚠️ <strong>주의:</strong> 문항을 수정하고 '저장하기'를 누르면 실제 검사에 즉시 반영됩니다. 초기화 버튼을 누르면 모든 문항이 기본값으로 복구됩니다.
+                </div>
+
+                <div id="question-edit-container" class="question-edit-list">
+                    <!-- 문항 리스트는 JS로 생성 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 이력 모달 -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-student-title" style="margin-bottom: 20px; color: #333;">학생 기록</h2>
+            <div id="history-table-container"></div>
+        </div>
     </div>
 
     <script>
@@ -411,18 +687,336 @@
             reflective: { name: '성찰하는 사람', nameEn: 'Reflective', emoji: '🤔', color: '#2979FF' }
         };
 
+        // 기본 질문 데이터 (초기화용)
+        const defaultQuestions = [
+            // Inquirers
+            { id: 1, text: '새로운 것을 보면 “왜 그럴까?” 하는 마음이 든다.', profile: 'inquirer' },
+            { id: 2, text: '모르는 것이 생기면 바로 알아보려고 한다.', profile: 'inquirer' },
+            { id: 3, text: '과제를 할 때 먼저 스스로 찾아본다.', profile: 'inquirer' },
+            { id: 4, text: '친구들 앞에서도 질문을 잘한다.', profile: 'inquirer' },
+            { id: 5, text: '궁금한 게 있으면 오래 찾아보는 편이다.', profile: 'inquirer' },
+            { id: 6, text: '문제를 풀 때 여러 책이나 자료를 비교해본다.', profile: 'inquirer' },
+            { id: 7, text: '한 가지 생각보다 여러 생각을 떠올리려 한다.', profile: 'inquirer' },
+            { id: 8, text: '공부할 때 “왜 그런지 이유”를 알고 싶다.', profile: 'inquirer' },
+            { id: 9, text: '처음 알게된 주제에 대해서도 공부하고 알아보고 싶다.', profile: 'inquirer' },
+            { id: 10, text: '수업이나 모둠에서 질문을 자주 한다.', profile: 'inquirer' },
+            // Knowledgeable
+            { id: 11, text: '배운 것을 서로 이어서 생각하려 한다.', profile: 'knowledgeable' },
+            { id: 12, text: '겉모양(겉보기)만 아는 것보다 깊게 아는 것이 더 좋다.', profile: 'knowledgeable' },
+            { id: 13, text: '좋아하는 공부를 오래 해본 적이 있다.', profile: 'knowledgeable' },
+            { id: 14, text: '배운 것을 실제 문제에 써보려고 한다.', profile: 'knowledgeable' },
+            { id: 15, text: '새로운 정보를 들으면 이미 아는 것과 연결해본다.', profile: 'knowledgeable' },
+            { id: 16, text: '내가 아는 것을 친구에게 설명하는 것이 좋다.', profile: 'knowledgeable' },
+            { id: 17, text: '수업이 끝나도 혼자 더 찾아보는 편이다.', profile: 'knowledgeable' },
+            { id: 18, text: '다른 예를 보며 비슷한 점을 찾을 수 있다.', profile: 'knowledgeable' },
+            { id: 19, text: '내가 좋아하는 주제의 새 소식을 관심 있게 본다.', profile: 'knowledgeable' },
+            { id: 20, text: '문제를 풀 때 알고 있는 지식을 사용한다.', profile: 'knowledgeable' },
+            // Thinkers
+            { id: 21, text: '어떤 일이 생기면 무슨 일이 일어난 것인지 곰곰이 생각해본다.', profile: 'thinker' },
+            { id: 22, text: '어려운 문제도 차근차근 살펴본다.', profile: 'thinker' },
+            { id: 23, text: '결정을 할 때 여러 방법을 비교해본다.', profile: 'thinker' },
+            { id: 24, text: '“왜 이렇게 됐을까?” 하고 자주 생각한다.', profile: 'thinker' },
+            { id: 25, text: '정보(알고 있는 것)가 부족하면 더 찾아본다.', profile: 'thinker' },
+            { id: 26, text: '다양한 감정이 드는 상황에서도 차분히 생각하려 한다.', profile: 'thinker' },
+            { id: 27, text: '과제를 할 때 먼저 계획을 세운다.', profile: 'thinker' },
+            { id: 28, text: '친구들이 못 본 실수나 잘못을 잘 알아채는 편이다.', profile: 'thinker' },
+            { id: 29, text: '답보다 어떻게 풀었는지 과정을 더 중요하게 생각한다.', profile: 'thinker' },
+            { id: 30, text: '어려운 내용을 쉬운 말로 바꾸어 말하는 걸 좋아한다.', profile: 'thinker' },
+            // Communicators
+            { id: 31, text: '내 말을 친구가 잘 이해하도록 말하려 한다.', profile: 'communicator' },
+            { id: 32, text: '많이 말하기보다 잘 듣는 것도 중요하다고 생각한다.', profile: 'communicator' },
+            { id: 33, text: '발표할 때 많이 떨지 않는다.', profile: 'communicator' },
+            { id: 34, text: '친구 말의 진짜 뜻을 생각해보려고 한다.', profile: 'communicator' },
+            { id: 35, text: '의견이 다를 때도 조용히 대화를 이어가려 한다.', profile: 'communicator' },
+            { id: 36, text: '말·그림·글 등 여러 가지 방법으로 설명할 수 있다.', profile: 'communicator' },
+            { id: 37, text: '모둠에서 서로 다툴 때 사이좋게 만들려고 한다.', profile: 'communicator' },
+            { id: 38, text: '질문을 할 때 쉽고 분명하게 하려고 한다.', profile: 'communicator' },
+            { id: 39, text: '토론할 때 이기려고 하기보다 상대방에 대해 이해하려고 노력한다.', profile: 'communicator' },
+            { id: 40, text: '발표 준비를 할 때 내용을 잘 정리한다.', profile: 'communicator' },
+            // Principled
+            { id: 41, text: '아무도 보지 않아도 규칙을 지키려고 한다.', profile: 'principled' },
+            { id: 42, text: '정직하게 말하고 행동하는 것이 중요하다. (정직: 거짓말하지 않기)', profile: 'principled' },
+            { id: 43, text: '약속을 꼭 지키려고 노력한다.', profile: 'principled' },
+            { id: 44, text: '맡은 일을 끝까지 한다.', profile: 'principled' },
+            { id: 45, text: '불공평(공정하지 않은)한 일을 보면 그냥 지나치기 어렵다.', profile: 'principled' },
+            { id: 46, text: '과제를 할 때 거짓말로 꾸며내거나 남을 속이지 않는다.', profile: 'principled' },
+            { id: 47, text: '다른 사람에게 피해(나쁜 영향)를 주지 않으려 한다.', profile: 'principled' },
+            { id: 48, text: '잘못하면 숨기지 않고 인정한다.', profile: 'principled' },
+            { id: 49, text: '모두가 함께 지키는 규칙을 중요하게 생각한다.', profile: 'principled' },
+            { id: 50, text: '모든 사람이 같은 기준(규칙)으로 평가받아야 한다고 생각한다.', profile: 'principled' },
+            // Open-minded
+            { id: 51, text: '나와 다른 의견이 있어도 이유를 먼저 들어보려고 한다.', profile: 'openMinded' },
+            { id: 52, text: '다른 나라나 문화가 궁금하다. (문화: 사람이 사는 방법이나 모습)', profile: 'openMinded' },
+            { id: 53, text: '내가 틀릴 수도 있다고 생각하는 게 어렵지 않다.', profile: 'openMinded' },
+            { id: 54, text: '새 방법이 나오면 한 번 해보려 한다.', profile: 'openMinded' },
+            { id: 55, text: '사람을 만날 때 편견(미리 정한 생각) 없이 대하려 한다.', profile: 'openMinded' },
+            { id: 56, text: '의견이 부딪혀도 상대의 입장을 생각한다.', profile: 'openMinded' },
+            { id: 57, text: '익숙하지 않은 내용을 알게되도 차분하게 살펴보고 생각한다.', profile: 'openMinded' },
+            { id: 58, text: '나와 다른 행동 방식이 이상해 보여도 먼저 이해하려 한다.', profile: 'openMinded' },
+            { id: 59, text: '새로운 언어(말)나 문화를 배우는 게 재미있다.', profile: 'openMinded' },
+            { id: 60, text: '토론에서 내가 틀렸다는 걸 인정하는 것이 괜찮다.', profile: 'openMinded' },
+            // Caring
+            { id: 61, text: '친구가 힘들면 도와주고 싶다.', profile: 'caring' },
+            { id: 62, text: '다투는 상황에서도 상대를 존중(예의 있게 대함)하려 한다.', profile: 'caring' },
+            { id: 63, text: '누군가 기분이 이상해 보이면 금방 눈치챈다.', profile: 'caring' },
+            { id: 64, text: '함께하는 일을 위해 내 시간을 쓰는 것이 괜찮다.', profile: 'caring' },
+            { id: 65, text: '누가 도움을 구하면 바빠도 도우려고 한다.', profile: 'caring' },
+            { id: 66, text: '상대방의 마음을 생각해보려 한다.', profile: 'caring' },
+            { id: 67, text: '친구가 혼자 있으면 신경 쓰인다.', profile: 'caring' },
+            { id: 68, text: '모둠에서 분위기를 좋게 만들려고 한다.', profile: 'caring' },
+            { id: 69, text: '고마움을 자주 표현한다.', profile: 'caring' },
+            { id: 70, text: '지금 당장 나에게 이익이 없어도 도울 수 있다.', profile: 'caring' },
+            // Risk-takers
+            { id: 71, text: '처음 하는 일이어도 해보고 싶은 마음이 든다.', profile: 'riskTaker' },
+            { id: 72, text: '실패(잘 안 되는 것)하더라도 다시 해보려 한다.', profile: 'riskTaker' },
+            { id: 73, text: '낯선 곳이나 처음 보는 상황에서도 적응하려 한다.', profile: 'riskTaker' },
+            { id: 74, text: '발표나 경쟁 상황에도 참여하려 한다.', profile: 'riskTaker' },
+            { id: 75, text: '새로운 활동을 하면 설렌다. (설렌다: 기분이 두근두근하다)', profile: 'riskTaker' },
+            { id: 76, text: '문제를 마주하면 피하지 않고 해결하려 한다.', profile: 'riskTaker' },
+            { id: 77, text: '높은 목표(큰 꿈)를 세우는 게 어렵지 않다.', profile: 'riskTaker' },
+            { id: 78, text: '잘 모르는 상황에서도 결정을 할 수 있다.', profile: 'riskTaker' },
+            { id: 79, text: '새로운 방법을 시험해보는 편이다.', profile: 'riskTaker' },
+            { id: 80, text: '비판(안 좋은 말)을 들을 수도 있어도 내 의견을 말한다.', profile: 'riskTaker' },
+            // Balanced
+            { id: 81, text: '공부·쉬기·놀기 시간을 골고루 하려고 한다.', profile: 'balanced' },
+            { id: 82, text: '스트레스를 받으면 스스로 조절하려 한다.', profile: 'balanced' },
+            { id: 83, text: '몸 쓰는 일과 생각하는 일을 균형 있게 하려고 한다.', profile: 'balanced' },
+            { id: 84, text: '친구·가족·학교 생활을 고르게 챙기려고 한다.', profile: 'balanced' },
+            { id: 85, text: '시간이 부족하면 우선순위(먼저 할 것)를 정한다.', profile: 'balanced' },
+            { id: 86, text: '한 가지에 너무 몰두(너무 빠져버림)하지 않으려고 한다.', profile: 'balanced' },
+            { id: 87, text: '운동이나 쉬는 시간을 챙기려고 한다.', profile: 'balanced' },
+            { id: 88, text: '학생·친구·가족 역할을 균형 있게 하려고 한다.', profile: 'balanced' },
+            { id: 89, text: '마음이 힘들면 도움을 요청할 수 있다.', profile: 'balanced' },
+            { id: 90, text: '규칙적인 생활(매일 비슷하게 하는 생활)이 중요하다고 생각한다.', profile: 'balanced' },
+            // Reflective
+            { id: 91, text: '하루가 끝나면 오늘 한 일을 떠올려본다.', profile: 'reflective' },
+            { id: 92, text: '잘한 점·고칠 점을 스스로 생각해본다.', profile: 'reflective' },
+            { id: 93, text: '실수하면 “왜 그랬을까?” 하고 생각한다.', profile: 'reflective' },
+            { id: 94, text: '공부나 활동이 끝난 뒤 다시 되돌아본다.', profile: 'reflective' },
+            { id: 95, text: '어떤 공부 방법이 나에게 맞는지 고민한다.', profile: 'reflective' },
+            { id: 96, text: '목표(하고 싶은 것)를 세우고 잘 되는지 확인한다.', profile: 'reflective' },
+            { id: 97, text: '내 감정이 왜 생겼는지 생각해본다.', profile: 'reflective' },
+            { id: 98, text: '친구와 다투면 내 행동을 먼저 돌아본다.', profile: 'reflective' },
+            { id: 99, text: '결과보다 배우는 과정이 더 중요하다고 느낀다.', profile: 'reflective' },
+            { id: 100, text: '내 행동 습관(자주 하는 행동)을 알아보려고 한다.', profile: 'reflective' }
+        ];
+
         let results = [];
+        let currentQuestions = []; // 현재 편집 중인 질문 목록
         let radarChartInstance = null;
+        let currentSort = { field: null, direction: 'asc' }; // 메인 목록 정렬 상태
+        let modalSort = { field: 'date', direction: 'desc' }; // 모달 목록 정렬 상태 (기본값: 최신순)
+
+        // 필터 초기화
+        function initFilters() {
+            const gradeSelect = document.getElementById('grade-filter');
+            const classSelect = document.getElementById('class-filter');
+            
+            // 현재 선택된 값 저장 (리로드 시 유지 위함)
+            const currentGrade = gradeSelect.value;
+            const currentClass = classSelect.value;
+
+            // 학년 목록 추출 및 정렬
+            const grades = [...new Set(results.map(r => r.grade).filter(Boolean))].sort((a, b) => a - b);
+            
+            // 반 목록 추출 및 정렬
+            const classes = [...new Set(results.map(r => r.class).filter(Boolean))].sort((a, b) => a - b);
+
+            // 옵션 재생성
+            gradeSelect.innerHTML = '<option value="all">전체 학년</option>';
+            grades.forEach(g => {
+                const option = document.createElement('option');
+                option.value = g;
+                option.textContent = `${g}학년`;
+                gradeSelect.appendChild(option);
+            });
+
+            classSelect.innerHTML = '<option value="all">전체 반</option>';
+            classes.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c;
+                option.textContent = `${c}반`;
+                classSelect.appendChild(option);
+            });
+
+            // 값 복원 (옵션이 존재할 경우에만)
+            if (grades.includes(currentGrade)) gradeSelect.value = currentGrade;
+            if (classes.includes(currentClass)) classSelect.value = currentClass;
+        }
+
+        // 필터링된 결과 가져오기
+        function getFilteredResults() {
+            const gradeFilter = document.getElementById('grade-filter').value;
+            const classFilter = document.getElementById('class-filter').value;
+
+            return results.filter(r => {
+                const matchGrade = gradeFilter === 'all' || r.grade.toString() === gradeFilter;
+                const matchClass = classFilter === 'all' || r.class.toString() === classFilter;
+                return matchGrade && matchClass;
+            });
+        }
+
+        // 필터 이벤트 리스너
+        document.getElementById('grade-filter').addEventListener('change', updateDashboard);
+        document.getElementById('class-filter').addEventListener('change', updateDashboard);
+
+        function updateDashboard() {
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            if (activeTab === 'overview') renderOverview();
+            else if (activeTab === 'students') renderStudentList();
+            else if (activeTab === 'statistics') renderStatistics();
+        }
 
         // 데이터 로드
         function loadResults() {
             try {
                 results = JSON.parse(localStorage.getItem('ibTestResults') || '[]');
+                initFilters();
             } catch (e) {
                 console.error('Failed to load results', e);
                 results = [];
             }
         }
+
+        // 질문 데이터 로드
+        function loadQuestions() {
+            try {
+                // 저장된 데이터 불러오기
+                const stored = JSON.parse(localStorage.getItem('ibTestQuestions'));
+                
+                if (stored) {
+                    currentQuestions = stored;
+                    // 데이터 마이그레이션: useForShortTest 속성이 없으면 초기화 (앞 5개 true)
+                    // 프로필별로 카운팅해서 앞 5개만 true로 설정
+                    const profileCounts = {};
+                    let needSave = false;
+                    
+                    currentQuestions.forEach(q => {
+                        if (q.useForShortTest === undefined) {
+                            profileCounts[q.profile] = (profileCounts[q.profile] || 0) + 1;
+                            q.useForShortTest = profileCounts[q.profile] <= 5;
+                            needSave = true;
+                        }
+                    });
+                    
+                    if (needSave) {
+                        localStorage.setItem('ibTestQuestions', JSON.stringify(currentQuestions));
+                    }
+                } else {
+                    // 기본값 로드 및 초기 설정
+                    currentQuestions = JSON.parse(JSON.stringify(defaultQuestions));
+                    const profileCounts = {};
+                    currentQuestions.forEach(q => {
+                        profileCounts[q.profile] = (profileCounts[q.profile] || 0) + 1;
+                        q.useForShortTest = profileCounts[q.profile] <= 5;
+                    });
+                }
+            } catch (e) {
+                console.error('Failed to load questions', e);
+                currentQuestions = JSON.parse(JSON.stringify(defaultQuestions));
+            }
+        }
+
+        // 질문 필터 옵션 초기화
+        function initQuestionFilter() {
+            const select = document.getElementById('question-profile-filter');
+            select.innerHTML = '';
+            
+            Object.entries(learnerProfiles).forEach(([key, profile]) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = `${profile.emoji} ${profile.name}`;
+                select.appendChild(option);
+            });
+
+            // 이벤트 리스너
+            select.addEventListener('change', renderQuestionEditor);
+        }
+
+        // 질문 에디터 렌더링
+        function renderQuestionEditor() {
+            const container = document.getElementById('question-edit-container');
+            const selectedProfile = document.getElementById('question-profile-filter').value;
+            
+            // 선택된 프로필의 질문만 필터링
+            const filteredQuestions = currentQuestions.filter(q => q.profile === selectedProfile);
+            
+            container.innerHTML = filteredQuestions.map(q => `
+                <div class="question-edit-item ${q.useForShortTest ? 'short-test-selected' : ''}">
+                    <div>
+                        <span class="question-id-badge">문항 ${q.id}</span>
+                        <span class="short-test-badge">50문항 포함</span>
+                    </div>
+                    <div class="question-content">
+                        <input type="text" class="question-input" 
+                            value="${q.text}" 
+                            data-id="${q.id}"
+                            onchange="updateQuestionText(${q.id}, this.value)">
+                        <div class="question-options">
+                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" 
+                                    ${q.useForShortTest ? 'checked' : ''} 
+                                    onchange="updateShortTestStatus(${q.id}, this.checked)">
+                                50문항(약식) 검사에 포함하기
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 질문 텍스트 업데이트 (메모리 상)
+        window.updateQuestionText = function(id, newText) {
+            const question = currentQuestions.find(q => q.id === id);
+            if (question) {
+                question.text = newText;
+            }
+        };
+
+        // 50문항 포함 여부 업데이트
+        window.updateShortTestStatus = function(id, isChecked) {
+            const question = currentQuestions.find(q => q.id === id);
+            if (question) {
+                // 해당 프로필의 현재 선택된 개수 확인
+                const profileQuestions = currentQuestions.filter(q => q.profile === question.profile);
+                const currentSelectedCount = profileQuestions.filter(q => q.useForShortTest).length;
+
+                if (isChecked) {
+                    // 체크하려는 경우: 5개를 초과하는지 확인
+                    if (currentSelectedCount >= 5) {
+                        alert('각 학습자상당 최대 5개의 문항만 50문항 검사에 포함할 수 있습니다.\n다른 문항의 체크를 해제한 후 다시 시도해주세요.');
+                        // 체크박스 상태 되돌리기 (UI 갱신을 위해 재렌더링)
+                        renderQuestionEditor();
+                        return;
+                    }
+                    question.useForShortTest = true;
+                } else {
+                    // 체크 해제하려는 경우: 최소 1개는 있어야 하는 등의 제약이 필요하다면 추가
+                    question.useForShortTest = false;
+                }
+                
+                // UI 갱신 (스타일 적용을 위해)
+                renderQuestionEditor();
+            }
+        };
+
+        // 질문 저장
+        document.getElementById('save-questions-btn').addEventListener('click', () => {
+            if (confirm('수정된 문항을 저장하시겠습니까? 저장 즉시 실제 검사에 반영됩니다.')) {
+                localStorage.setItem('ibTestQuestions', JSON.stringify(currentQuestions));
+                alert('문항이 성공적으로 저장되었습니다.');
+            }
+        });
+
+        // 질문 초기화
+        document.getElementById('reset-questions-btn').addEventListener('click', () => {
+            if (confirm('모든 문항을 기본값으로 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                localStorage.removeItem('ibTestQuestions');
+                loadQuestions(); // 다시 로드 (기본값으로)
+                renderQuestionEditor(); // 화면 갱신
+                alert('모든 문항이 초기화되었습니다.');
+            }
+        });
 
         // 탭 전환
         document.querySelectorAll('.tab').forEach(tab => {
@@ -434,25 +1028,37 @@
                 document.getElementById('overview-tab').classList.add('hidden');
                 document.getElementById('students-tab').classList.add('hidden');
                 document.getElementById('statistics-tab').classList.add('hidden');
+                document.getElementById('questions-tab').classList.add('hidden'); // 기존 탭 숨김 추가
+                
                 document.getElementById(`${tabName}-tab`).classList.remove('hidden');
 
-                if (tabName === 'statistics') {
-                    renderStatistics();
+                // 탭 전환 시 현재 필터 상태에 맞춰 렌더링
+                if (tabName === 'overview') renderOverview();
+                else if (tabName === 'students') renderStudentList();
+                else if (tabName === 'statistics') renderStatistics();
+                else if (tabName === 'questions') {
+                    loadQuestions(); // 탭 열 때 최신 데이터 로드
+                    renderQuestionEditor(); // 에디터 렌더링
                 }
             });
         });
 
         // 개요 렌더링
         function renderOverview() {
-            document.getElementById('total-students').textContent = `${results.length}명`;
+            const filteredData = getFilteredResults();
+            document.getElementById('total-students').textContent = `${filteredData.length}명`;
             
-            if (results.length > 0) {
-                const lastTest = new Date(results[results.length - 1].date);
+            if (filteredData.length > 0) {
+                // 날짜순 정렬 후 가장 최근 것 가져오기
+                const sortedByDate = [...filteredData].sort((a, b) => new Date(b.date) - new Date(a.date));
+                const lastTest = new Date(sortedByDate[0].date);
                 document.getElementById('recent-test').textContent = lastTest.toLocaleDateString('ko-KR');
+            } else {
+                document.getElementById('recent-test').textContent = '-';
             }
 
             // TOP 5 학습자상
-            const topProfiles = getTopProfiles();
+            const topProfiles = getTopProfiles(filteredData);
             const topProfilesHtml = topProfiles.length > 0 ? topProfiles.map(([profile, count], index) => {
                 const profileData = learnerProfiles[profile];
                 const maxCount = topProfiles[0][1];
@@ -468,21 +1074,21 @@
                         <span class="profile-score" style="color: ${profileData.color};">${count}점</span>
                     </div>
                 `;
-            }).join('') : '<div class="empty-state"><div class="empty-state-icon">📭</div><p>아직 데이터가 없습니다.</p></div>';
+            }).join('') : '<div class="empty-state"><div class="empty-state-icon">📭</div><p>해당 조건의 데이터가 없습니다.</p></div>';
 
             document.getElementById('top-profiles').innerHTML = topProfilesHtml;
         }
 
-        function getTopProfiles() {
-            if (results.length === 0) return [];
+        function getTopProfiles(data) {
+            if (data.length === 0) return [];
 
             const profileCounts = {};
             Object.keys(learnerProfiles).forEach(profile => {
                 profileCounts[profile] = 0;
             });
 
-            results.forEach(result => {
-                // 상위 4개까지 반영 (기존 3개에서 확장)
+            data.forEach(result => {
+                // 상위 4개까지 반영
                 const tops = result.topProfiles || [];
                 tops.slice(0, 4).forEach((profile, index) => {
                     if (index === 0) profileCounts[profile[0]] += 4;      // 1위: 4점
@@ -499,37 +1105,107 @@
 
         // 학생 목록 렌더링
         function renderStudentList() {
-            if (results.length === 0) {
+            // 1. 필터링
+            let filteredData = getFilteredResults();
+            
+            if (filteredData.length === 0) {
                 document.getElementById('student-table-container').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
-                        <p>아직 테스트 결과가 없습니다.</p>
+                        <p>해당 조건의 학생 데이터가 없습니다.</p>
                     </div>
                 `;
                 return;
             }
 
+            // 2. 중복 제거 (이름+학년+반 기준 최신 데이터만 유지)
+            // 단, 전체 삭제나 CSV 내보내기 등은 전체 데이터를 대상으로 할 수도 있으나,
+            // 목록 보기에서는 "학생 현황"을 보는 것이므로 최신만 보여줌.
+            const uniqueStudents = {};
+            filteredData.forEach(item => {
+                const key = `${item.grade}-${item.class}-${item.name}-${item.number}`;
+                if (!uniqueStudents[key] || new Date(item.date) > new Date(uniqueStudents[key].date)) {
+                    uniqueStudents[key] = item;
+                }
+            });
+            let displayData = Object.values(uniqueStudents);
+
+            // 3. 정렬 로직
+            displayData.sort((a, b) => {
+                // 3-1. 사용자 지정 정렬
+                if (currentSort.field) {
+                    let valA = a[currentSort.field];
+                    let valB = b[currentSort.field];
+
+                    // 숫자형 데이터 변환
+                    if (['grade', 'class', 'number'].includes(currentSort.field)) {
+                        valA = parseInt(valA) || 0;
+                        valB = parseInt(valB) || 0;
+                    } else if (currentSort.field === 'date') {
+                        valA = new Date(valA);
+                        valB = new Date(valB);
+                    }
+
+                    if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+                    if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+                    return 0;
+                }
+                
+                // 3-2. 기본 정렬 (사용자 지정 정렬이 없을 때)
+                const classFilter = document.getElementById('class-filter').value;
+                if (classFilter !== 'all') {
+                    // 반이 선택된 경우: 번호 오름차순
+                    return (parseInt(a.number) || 0) - (parseInt(b.number) || 0);
+                } else {
+                    // 전체/학년 보기: 학년 -> 반 -> 번호 오름차순
+                    if (a.grade != b.grade) return (parseInt(a.grade) || 0) - (parseInt(b.grade) || 0);
+                    if (a.class != b.class) return (parseInt(a.class) || 0) - (parseInt(b.class) || 0);
+                    return (parseInt(a.number) || 0) - (parseInt(b.number) || 0);
+                }
+            });
+
+            // 헤더 생성 함수 (정렬 아이콘 포함)
+            const createHeader = (field, text) => {
+                let className = 'sortable-header';
+                if (currentSort.field === field) {
+                    className += ` ${currentSort.direction}`;
+                }
+                return `<th class="${className}" onclick="handleSort('${field}')">${text} <span class="sort-icon"></span></th>`;
+            };
+
             const tableHtml = `
                 <table>
                     <thead>
                         <tr>
-                            <th>이름</th>
-                            <th>학년</th>
-                            <th>반</th>
-                            <th>번호</th>
-                            <th>테스트 날짜</th>
+                            ${createHeader('name', '이름')}
+                            ${createHeader('grade', '학년')}
+                            ${createHeader('class', '반')}
+                            ${createHeader('number', '번호')}
+                            ${createHeader('date', '최근 테스트 날짜')}
+                            <th>유형</th>
                             <th>상위 학습자상</th>
                             <th>작업</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${results.map((result, index) => `
+                        ${displayData.map((result) => {
+                            // 원본 배열에서의 인덱스 찾기 (삭제 기능을 위해 - 최신 데이터 기준)
+                            // 주의: 중복 제거된 뷰에서 삭제 시 해당 학생의 '최신 기록'만 삭제할지 고민 필요.
+                            // 여기서는 리스트에 보이는 항목(최신)을 삭제하도록 함.
+                            const originalIndex = results.indexOf(result);
+                            
+                            return `
                             <tr>
-                                <td><strong>${result.name}</strong></td>
+                                <td>
+                                    <span class="student-name-link" onclick="openHistoryModal('${result.name}', '${result.grade}', '${result.class}', '${result.number}')">
+                                        ${result.name}
+                                    </span>
+                                </td>
                                 <td>${result.grade}학년</td>
                                 <td>${result.class}반</td>
                                 <td>${result.number}번</td>
                                 <td>${new Date(result.date).toLocaleString('ko-KR')}</td>
+                                <td><span class="tag" style="background: #f3f4f6; color: #4b5563;">${result.testType || 100}문항</span></td>
                                 <td>
                                     ${(result.topProfiles || []).slice(0, 4).map(([profile, score]) => {
                                         const profileData = learnerProfiles[profile];
@@ -539,33 +1215,203 @@
                                     }).join('')}
                                 </td>
                                 <td>
-                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.9em;" onclick="deleteResult(${index})">삭제</button>
+                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.9em;" onclick="deleteResult(${originalIndex})">삭제</button>
                                 </td>
                             </tr>
-                        `).join('')}
+                        `}).join('')}
                     </tbody>
                 </table>
             `;
             document.getElementById('student-table-container').innerHTML = tableHtml;
         }
 
+        // 정렬 핸들러
+        function handleSort(field) {
+            if (currentSort.field === field) {
+                // 같은 필드 클릭 시 방향 토글
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                // 새로운 필드 클릭 시 오름차순 시작
+                currentSort.field = field;
+                currentSort.direction = 'asc';
+            }
+            renderStudentList();
+        }
+
+        // 이력 모달 열기
+        function openHistoryModal(name, grade, studentClass, number) {
+            const modal = document.getElementById('history-modal');
+            const title = document.getElementById('modal-student-title');
+            
+            // 현재 보고 있는 학생 정보 저장 (정렬 시 재사용)
+            modal.dataset.currentStudent = JSON.stringify({ name, grade, class: studentClass, number });
+            
+            title.textContent = `${grade}학년 ${studentClass}반 ${number}번 ${name} 학생의 전체 기록`;
+            
+            renderHistoryTable();
+            modal.style.display = 'block';
+        }
+
+        // 이력 테이블 렌더링 (정렬 기능 추가)
+        function renderHistoryTable() {
+            const modal = document.getElementById('history-modal');
+            const container = document.getElementById('history-table-container');
+            
+            if (!modal.dataset.currentStudent) return;
+            
+            const studentInfo = JSON.parse(modal.dataset.currentStudent);
+            
+            // 해당 학생의 모든 기록 찾기
+            let studentHistory = results.filter(r => 
+                r.name === studentInfo.name && 
+                r.grade == studentInfo.grade && 
+                r.class == studentInfo.class && 
+                r.number == studentInfo.number
+            );
+
+            // 정렬
+            studentHistory.sort((a, b) => {
+                let valA = a[modalSort.field];
+                let valB = b[modalSort.field];
+
+                if (modalSort.field === 'date') {
+                    valA = new Date(valA);
+                    valB = new Date(valB);
+                }
+
+                if (valA < valB) return modalSort.direction === 'asc' ? -1 : 1;
+                if (valA > valB) return modalSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // 헤더 생성 함수
+            const createModalHeader = (field, text) => {
+                let className = 'sortable-header';
+                if (modalSort.field === field) {
+                    className += ` ${modalSort.direction}`;
+                }
+                // onclick 이벤트에서 전역 함수 호출
+                return `<th class="${className}" onclick="handleModalSort('${field}')">${text} <span class="sort-icon"></span></th>`;
+            };
+
+            const historyHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            ${createModalHeader('date', '테스트 날짜')}
+                            <th>유형</th>
+                            <th>상위 학습자상</th>
+                            <th>작업</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${studentHistory.map(result => {
+                            const originalIndex = results.indexOf(result);
+                            return `
+                            <tr>
+                                <td>${new Date(result.date).toLocaleString('ko-KR')}</td>
+                                <td><span class="tag" style="background: #f3f4f6; color: #4b5563;">${result.testType || 100}문항</span></td>
+                                <td>
+                                    ${(result.topProfiles || []).slice(0, 4).map(([profile, score]) => {
+                                        const profileData = learnerProfiles[profile];
+                                        return `<span class="tag" style="background-color: ${profileData.color}20; color: ${profileData.color};">
+                                            ${profileData.emoji} ${profileData.name} (${score}%)
+                                        </span>`;
+                                    }).join('')}
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.9em;" onclick="deleteResult(${originalIndex}, true)">삭제</button>
+                                </td>
+                            </tr>
+                        `}).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = historyHtml;
+        }
+
+        // 모달 정렬 핸들러
+        function handleModalSort(field) {
+            if (modalSort.field === field) {
+                modalSort.direction = modalSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                modalSort.field = field;
+                modalSort.direction = 'asc';
+            }
+            renderHistoryTable();
+        }
+
+        // 모달 닫기
+        document.querySelector('.close-modal').addEventListener('click', () => {
+            document.getElementById('history-modal').style.display = 'none';
+        });
+
+        // 모달 외부 클릭 시 닫기
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('history-modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // 결과 삭제 (수정됨)
+        function deleteResult(index, isFromModal = false) {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                // 삭제 전 정보 저장 (모달 갱신용)
+                const deletedItem = results[index];
+                
+                results.splice(index, 1);
+                localStorage.setItem('ibTestResults', JSON.stringify(results));
+                
+                // 화면 갱신
+                initFilters(); // 필터 목록 갱신
+                renderStudentList();
+                renderOverview();
+                
+                // 모달에서 삭제했다면 모달 내용도 갱신
+                if (isFromModal) {
+                    // 아직 해당 학생의 데이터가 남아있는지 확인
+                    const remaining = results.filter(r => 
+                        r.name === deletedItem.name && 
+                        r.grade === deletedItem.grade && 
+                        r.class === deletedItem.class && 
+                        r.number === deletedItem.number
+                    );
+                    
+                    if (remaining.length > 0) {
+                        renderHistoryTable(); // 모달 테이블만 다시 렌더링
+                    } else {
+                        document.getElementById('history-modal').style.display = 'none';
+                    }
+                }
+            }
+        }
+
         // 통계 렌더링
         function renderStatistics() {
-            if (results.length === 0) {
+            const filteredData = getFilteredResults();
+
+            if (filteredData.length === 0) {
                 document.getElementById('detailed-stats').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📊</div>
-                        <p>통계를 표시하려면 최소 1명 이상의 데이터가 필요합니다.</p>
+                        <p>통계를 표시할 데이터가 없습니다.</p>
                     </div>
                 `;
+                // 차트 초기화
+                if (radarChartInstance) {
+                    radarChartInstance.destroy();
+                    radarChartInstance = null;
+                }
                 return;
             }
 
             // 평균 점수 계산
             const profileAverages = {};
             Object.keys(learnerProfiles).forEach(profile => {
-                const total = results.reduce((sum, r) => sum + (r.scores[profile] || 0), 0);
-                profileAverages[profile] = Math.round(total / results.length);
+                const total = filteredData.reduce((sum, r) => sum + (r.scores[profile] || 0), 0);
+                profileAverages[profile] = Math.round(total / filteredData.length);
             });
 
             // 레이더 차트
@@ -634,18 +1480,22 @@
             if (confirm('정말 삭제하시겠습니까?')) {
                 results.splice(index, 1);
                 localStorage.setItem('ibTestResults', JSON.stringify(results));
-                renderStudentList();
-                renderOverview();
+                
+                // 삭제 후 필터 목록 갱신 (학년/반이 사라질 수 있으므로)
+                initFilters();
+                
+                // 현재 탭 화면 갱신
+                updateDashboard();
             }
         }
 
         // 전체 삭제
         document.getElementById('clear-all').addEventListener('click', () => {
-            if (confirm('모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+            if (confirm('현재 필터링된 목록을 포함하여 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
                 localStorage.removeItem('ibTestResults');
                 results = [];
-                renderStudentList();
-                renderOverview();
+                initFilters();
+                updateDashboard();
             }
         });
 
@@ -680,6 +1530,8 @@
 
         // 초기화
         loadResults();
+        loadQuestions(); // 질문 데이터 로드
+        initQuestionFilter(); // 질문 필터 초기화
         renderOverview();
         renderStudentList();
     </script>
