@@ -673,6 +673,9 @@
     </div>
 
     <script>
+        // Google Apps Script 배포 URL (여기에 복사한 URL을 붙여넣으세요)
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxzDBrGYJaN5FiBDuDArnr8oy69N1NNl4LA3kwjUXG-LlcFxAAIPW5Ft4ilTopk0Fq/exec';
+
         // IB 학습자상 정의
         const learnerProfiles = {
             inquirer: { name: '탐구하는 사람', nameEn: 'Inquirers', emoji: '🔍', color: '#E91E63' },
@@ -868,52 +871,82 @@
         }
 
         // 데이터 로드
-        function loadResults() {
+        async function loadResults() {
             try {
-                results = JSON.parse(localStorage.getItem('ibTestResults') || '[]');
+                if (GOOGLE_SCRIPT_URL) {
+                    const response = await fetch(GOOGLE_SCRIPT_URL);
+                    const data = await response.json();
+                    results = data;
+                } else {
+                    // URL이 없으면 로컬 스토리지 사용
+                    results = JSON.parse(localStorage.getItem('ibTestResults') || '[]');
+                }
                 initFilters();
+                updateDashboard(); // 데이터 로드 후 대시보드 업데이트
             } catch (e) {
                 console.error('Failed to load results', e);
-                results = [];
+                alert('데이터를 불러오는데 실패했습니다. 로컬 데이터를 시도합니다.');
+                results = JSON.parse(localStorage.getItem('ibTestResults') || '[]');
+                initFilters();
+                updateDashboard();
             }
         }
 
         // 질문 데이터 로드
-        function loadQuestions() {
+        async function loadQuestions() {
             try {
-                // 저장된 데이터 불러오기
-                const stored = JSON.parse(localStorage.getItem('ibTestQuestions'));
-                
-                if (stored) {
-                    currentQuestions = stored;
-                    // 데이터 마이그레이션: useForShortTest 속성이 없으면 초기화 (앞 5개 true)
-                    // 프로필별로 카운팅해서 앞 5개만 true로 설정
-                    const profileCounts = {};
-                    let needSave = false;
-                    
-                    currentQuestions.forEach(q => {
-                        if (q.useForShortTest === undefined) {
-                            profileCounts[q.profile] = (profileCounts[q.profile] || 0) + 1;
-                            q.useForShortTest = profileCounts[q.profile] <= 5;
-                            needSave = true;
+                // 1. 구글 시트에서 불러오기 시도
+                if (GOOGLE_SCRIPT_URL) {
+                    // 5초 타임아웃 설정
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                    try {
+                        const response = await fetch(GOOGLE_SCRIPT_URL + '?type=questions', {
+                            signal: controller.signal
+                        });
+                        clearTimeout(timeoutId);
+                        
+                        const data = await response.json();
+                        
+                        if (data && data.length > 0) {
+                            currentQuestions = data;
+                            console.log('Google Sheet에서 문항 로드 완료: ' + currentQuestions.length + '개');
+                        } else {
+                            throw new Error('Google Sheet에 문항 데이터가 없음 (빈 배열)');
                         }
-                    });
-                    
-                    if (needSave) {
-                        localStorage.setItem('ibTestQuestions', JSON.stringify(currentQuestions));
+                    } catch (fetchError) {
+                        if (fetchError.name === 'AbortError') {
+                            console.warn('Google Sheet 로드 시간 초과 (5초)');
+                        } else {
+                            console.warn('Google Sheet 로드 실패:', fetchError);
+                        }
+                        throw fetchError; // catch 블록으로 넘김
                     }
                 } else {
-                    // 기본값 로드 및 초기 설정
-                    currentQuestions = JSON.parse(JSON.stringify(defaultQuestions));
-                    const profileCounts = {};
-                    currentQuestions.forEach(q => {
-                        profileCounts[q.profile] = (profileCounts[q.profile] || 0) + 1;
-                        q.useForShortTest = profileCounts[q.profile] <= 5;
-                    });
+                    throw new Error('Google Script URL이 설정되지 않음');
                 }
             } catch (e) {
-                console.error('Failed to load questions', e);
-                currentQuestions = JSON.parse(JSON.stringify(defaultQuestions));
+                console.log('로컬/기본값 사용으로 전환:', e);
+                // 2. 실패 시 로컬 스토리지 확인
+                const stored = JSON.parse(localStorage.getItem('ibTestQuestions'));
+                if (stored && stored.length > 0) {
+                    currentQuestions = stored;
+                    console.log('로컬 스토리지에서 문항 로드 완료: ' + currentQuestions.length + '개');
+                } else {
+                    // 3. 로컬도 없으면 기본값 사용
+                    currentQuestions = JSON.parse(JSON.stringify(defaultQuestions));
+                    console.log('기본 문항(Default) 로드 완료: ' + currentQuestions.length + '개');
+                }
+                
+                // 데이터 마이그레이션 및 초기화 로직
+                const profileCounts = {};
+                currentQuestions.forEach(q => {
+                    if (q.useForShortTest === undefined) {
+                        profileCounts[q.profile] = (profileCounts[q.profile] || 0) + 1;
+                        q.useForShortTest = profileCounts[q.profile] <= 5;
+                    }
+                });
             }
         }
 
@@ -929,6 +962,11 @@
                 select.appendChild(option);
             });
 
+            // 첫 번째 옵션 강제 선택
+            if (select.options.length > 0) {
+                select.selectedIndex = 0;
+            }
+
             // 이벤트 리스너
             select.addEventListener('change', renderQuestionEditor);
         }
@@ -936,10 +974,34 @@
         // 질문 에디터 렌더링
         function renderQuestionEditor() {
             const container = document.getElementById('question-edit-container');
-            const selectedProfile = document.getElementById('question-profile-filter').value;
+            let selectedProfile = document.getElementById('question-profile-filter').value;
             
+            // 선택된 값이 없으면 첫 번째 값으로 시도
+            if (!selectedProfile && document.getElementById('question-profile-filter').options.length > 0) {
+                selectedProfile = document.getElementById('question-profile-filter').options[0].value;
+                document.getElementById('question-profile-filter').value = selectedProfile;
+            }
+
+            if (!selectedProfile) {
+                container.innerHTML = '<div class="empty-state">학습자상 프로필을 선택해주세요.</div>';
+                return;
+            }
+            
+            // 데이터가 없는 경우 처리
+            if (!currentQuestions || currentQuestions.length === 0) {
+                container.innerHTML = '<div class="empty-state">불러온 문항 데이터가 없습니다. (초기화 버튼을 눌러보세요)</div>';
+                return;
+            }
+
             // 선택된 프로필의 질문만 필터링
             const filteredQuestions = currentQuestions.filter(q => q.profile === selectedProfile);
+            
+            if (filteredQuestions.length === 0) {
+                container.innerHTML = `<div class="empty-state">
+                    '${learnerProfiles[selectedProfile]?.name || selectedProfile}'에 해당하는 문항이 없습니다.
+                </div>`;
+                return;
+            }
             
             container.innerHTML = filteredQuestions.map(q => `
                 <div class="question-edit-item ${q.useForShortTest ? 'short-test-selected' : ''}">
@@ -1001,10 +1063,39 @@
         };
 
         // 질문 저장
-        document.getElementById('save-questions-btn').addEventListener('click', () => {
+        document.getElementById('save-questions-btn').addEventListener('click', async () => {
             if (confirm('수정된 문항을 저장하시겠습니까? 저장 즉시 실제 검사에 반영됩니다.')) {
+                // 1. 로컬 스토리지에 저장 (백업 및 오프라인용)
                 localStorage.setItem('ibTestQuestions', JSON.stringify(currentQuestions));
-                alert('문항이 성공적으로 저장되었습니다.');
+                
+                // 2. 구글 시트에 저장
+                if (GOOGLE_SCRIPT_URL) {
+                    try {
+                        const btn = document.getElementById('save-questions-btn');
+                        const originalText = btn.textContent;
+                        btn.textContent = '저장 중...';
+                        btn.disabled = true;
+
+                        await fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                action: 'saveQuestions',
+                                questions: currentQuestions
+                            })
+                        });
+                        
+                        alert('문항이 구글 시트에 성공적으로 저장되었습니다.');
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                    } catch (e) {
+                        console.error('Google Sheet save error:', e);
+                        alert('구글 시트 저장 중 오류가 발생했습니다. (로컬에는 저장됨)');
+                    }
+                } else {
+                    alert('문항이 로컬에 저장되었습니다. (구글 시트 URL 없음)');
+                }
             }
         });
 
@@ -1020,7 +1111,7 @@
 
         // 탭 전환
         document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
+            tab.addEventListener('click', async () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
 
@@ -1037,7 +1128,11 @@
                 else if (tabName === 'students') renderStudentList();
                 else if (tabName === 'statistics') renderStatistics();
                 else if (tabName === 'questions') {
-                    loadQuestions(); // 탭 열 때 최신 데이터 로드
+                    // 로딩 표시
+                    const container = document.getElementById('question-edit-container');
+                    container.innerHTML = '<div style="text-align:center; padding: 50px; color: #666;">데이터를 불러오는 중입니다...<br>잠시만 기다려주세요.</div>';
+                    
+                    await loadQuestions(); // 탭 열 때 최신 데이터 로드 (동기화)
                     renderQuestionEditor(); // 에디터 렌더링
                 }
             });
@@ -1529,11 +1624,11 @@
         });
 
         // 초기화
-        loadResults();
+        loadResults(); // 비동기 호출이지만 초기화 흐름상 그대로 둠
         loadQuestions(); // 질문 데이터 로드
         initQuestionFilter(); // 질문 필터 초기화
-        renderOverview();
-        renderStudentList();
+        // renderOverview(); // loadResults 내부로 이동됨
+        // renderStudentList(); // loadResults 내부로 이동됨
     </script>
 </body>
 </html>
