@@ -21,10 +21,13 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: rgba(255, 255, 255, 0.95); /* 배경 반투명 처리 */
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             padding: 40px;
+            position: relative; /* z-index 적용을 위해 */
+            z-index: 1;
+            backdrop-filter: blur(10px); /* 블러 효과 추가 */
         }
 
         .hidden {
@@ -395,6 +398,71 @@
             box-shadow: 0 5px 10px rgba(0,0,0,0.15);
         }
 
+        /* 배경 이미지 컨테이너 */
+        .bg-images-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none; /* 클릭 통과 */
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .bg-side {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            width: 250px; /* PC 기준 너비 */
+            height: 100%;
+            opacity: 0.9;
+        }
+
+        .bg-img {
+            width: 100%;
+            height: auto;
+            max-height: 18vh; /* 화면 높이에 따라 조절 */
+            object-fit: contain;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+            transition: transform 0.3s;
+        }
+
+        .bg-img:hover {
+            transform: scale(1.1);
+        }
+
+        /* 반응형 처리 */
+        @media (max-width: 1400px) {
+            .bg-side {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .bg-side {
+                width: 120px;
+            }
+            .container {
+                max-width: 600px; /* 본문 너비 조금 줄임 */
+            }
+        }
+
+        /* 태블릿/모바일에서는 숨김 (가독성 확보) */
+        @media (max-width: 900px) {
+            .bg-images-container {
+                display: none;
+            }
+            .container {
+                max-width: 100%;
+                margin: 0 10px;
+            }
+        }
+
         /* 결과 조회 모달 */
         .search-modal {
             display: none;
@@ -485,6 +553,24 @@
     </style>
 </head>
 <body>
+    <!-- 배경 이미지 -->
+    <div class="bg-images-container">
+        <div class="bg-side left">
+            <img src="1_원칙을 지키는 사람.png" class="bg-img" alt="원칙을 지키는 사람">
+            <img src="3_균형 잡힌 사람.png" class="bg-img" alt="균형 잡힌 사람">
+            <img src="5_도전하는 사람.png" class="bg-img" alt="도전하는 사람">
+            <img src="7_열린 마음을 지닌 사람의 사본.png" class="bg-img" alt="열린 마음을 지닌 사람">
+            <img src="9_배려하는 사람.png" class="bg-img" alt="배려하는 사람">
+        </div>
+        <div class="bg-side right">
+            <img src="2_소통하는 사람.png" class="bg-img" alt="소통하는 사람">
+            <img src="4_사고하는 사람.png" class="bg-img" alt="사고하는 사람">
+            <img src="6_지식이 풍부한 사람.png" class="bg-img" alt="지식이 풍부한 사람">
+            <img src="8_탐구하는 사람.png" class="bg-img" alt="탐구하는 사람">
+            <img src="10_성찰하는 사람.png" class="bg-img" alt="성찰하는 사람">
+        </div>
+    </div>
+
     <button id="search-history-btn" class="dev-btn">🔍 내 결과 찾기</button>
     
     <!-- 결과 조회 모달 -->
